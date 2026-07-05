@@ -1,0 +1,27 @@
+# Secrets — never commit these
+.env
+*.pem
+wandb_api_key*
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# Data & model artifacts — repo is code and notes only
+data/
+datasets/
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.ckpt
+checkpoints/
+wandb/
+
+# OS / editor noise
+.DS_Store
+.vscode/
+.idea/
