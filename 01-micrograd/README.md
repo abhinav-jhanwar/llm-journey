@@ -10,9 +10,9 @@ Value class(scalar equivalent of PyTorch) implemented, backpropagation using top
 ## What I learned
 - Basics of how neural networks work and how they are trained
 - How backprop works. More in [`notes/`](../notes/01-backprop-explained.md).
-- Why it is important to use nonlinear functions as activation functions, otherwise it is not possible to train a neural net because linear functions will not have patters and stacking layers will tell us nothing.
+- Why it is important to use nonlinear functions as activation functions, otherwise it is not possible to train a neural net because linear functions will not be able to represent most real patters and stacking layers will tell us nothing.
 - How a loss function works and how to minimize it to get close to ideal values.
-- ReLU vs tanh. More in [`notes/`](../notes).
+- ReLU vs tanh. More in [`notes/`](../notes/02-tanh-vs-relu.md).
 - Non-leaf of Tensor in PyTorch need retain_grad() call to retain their gradient.
 
 ## How to run
