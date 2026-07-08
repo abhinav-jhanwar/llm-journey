@@ -46,8 +46,16 @@ class Value:
 
         return out
 
+    def relu(self):
+        out = Value(0 if self.data < 0 else self.data, (self,), 'ReLU')
+
+        def _backward():
+            self.grad += (out.data > 0) * out.grad
+        out._backward = _backward
+
+        return out
+
     def __pow__(self, other): # self ** other
-        other = other.data if isinstance(other, Value) else other
         assert isinstance(other, (float, int)), "only float/int supported currently"
         out = Value(self.data ** other, (self,), f'**{other}')
 
