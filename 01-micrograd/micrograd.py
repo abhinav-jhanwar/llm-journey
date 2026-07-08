@@ -112,22 +112,23 @@ class Value:
         return f"Value(data={self.data})"
 
 class Neuron:
-    def __init__(self, nin):
+    def __init__(self, nin, userelu=False):
         self.w = [Value(random.uniform(-1, 1)) for _ in range(nin)]
         self.b = Value(random.uniform(-1, 1))
+        self.userelu = userelu
 
     def __call__(self, x):
         # sum of inputs multiplied by weights with bias added
         act = sum(((wi * xi) for wi, xi in zip(self.w, x)), self.b)
-        out = act.tanh()
+        out = act.relu() if self.userelu else act.tanh()
         return out
 
     def parameters(self):
         return self.w + [self.b]
 
 class Layer:
-    def __init__(self, nin, nout):
-        self.neurons = [Neuron(nin) for _ in range(nout)]
+    def __init__(self, nin, nout, userelu=False):
+        self.neurons = [Neuron(nin, userelu) for _ in range(nout)]
 
     def __call__(self, x):
         outs = [n(x) for n in self.neurons]
@@ -137,11 +138,11 @@ class Layer:
         return [p for neuron in self.neurons for p in neuron.parameters()]
 
 class MLP:
-    def __init__(self, nin, nouts):
+    def __init__(self, nin, nouts, userelu=False):
         # add the number of initial inputs as number of inputs for first layer
         sz = [nin] + nouts
         # sz[i] are number of inputs received from previous layer and sz[i + 1] are number of outputs to feed to next layer
-        self.layers = [Layer(sz[i], sz[i + 1]) for i in range(len(nouts))]
+        self.layers = [Layer(sz[i], sz[i + 1], userelu) for i in range(len(nouts))]
 
     def __call__(self, x):
         # iteratively get to final output
