@@ -8,6 +8,6 @@ Learning to build LLMs from scratch — backprop to pretraining to inference sys
 
 | # | Project | What I built | Status |
 |---|---------|--------------|--------|
-| 01 | micrograd | Autograd engine + MLP from scratch | in progress |
+| 01 | [micrograd](./01-micrograd) | Autograd engine + MLP from scratch | complete |
 
 *Notes and concept write-ups live in [`notes/`](./notes).*

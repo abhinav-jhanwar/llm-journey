@@ -31,5 +31,7 @@ For the PyTorch autograd verification script:
 `python verify_pytorch.py`
 
 ## Backlog / known limitations
-- `Value ** Value` currently unsupported (asserts on non-numeric exponent).
-  Full support needs a `log()` op, since d(a^b)/db = a^b * ln(a).
+- ~~`Value ** Value` unsupported~~ **Done:** implemented with `log()` from the
+  exercises. Numeric exponents stay permissive (negative bases fine, base
+  gradient only); `Value` exponents assert a positive base, since
+  d(a^b)/db = a^b * ln(a) doesn't exist in the reals for a < 0.

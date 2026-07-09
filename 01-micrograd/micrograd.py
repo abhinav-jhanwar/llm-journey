@@ -55,14 +55,28 @@ class Value:
 
         return out
 
-    def __pow__(self, other): # self ** other
-        assert isinstance(other, (float, int)), "only float/int supported currently"
-        out = Value(self.data ** other, (self,), f'**{other}')
+    def log(self):
+        out = Value(math.log(self.data), (self,), 'log')
 
         def _backward():
-            self.grad  += other * (self.data ** (other - 1)) * out.grad
+            self.grad += (self.data ** -1) * out.grad
         out._backward = _backward
 
+        return out
+
+    def __pow__(self, other): # self ** other
+        if isinstance(other, Value):
+            assert self.data > 0, "Value exponent needs positive base (ln)"
+            out = Value(self.data ** other.data, (self, other), '**')
+            def _backward():
+                self.grad  += other.data * self.data ** (other.data - 1) * out.grad
+                other.grad += out.data * math.log(self.data) * out.grad
+        else:
+            assert isinstance(other, (int, float)), "only float/int supported currently"
+            out = Value(self.data ** other, (self,), f'**{other}')
+            def _backward():
+                self.grad += other * self.data ** (other - 1) * out.grad
+        out._backward = _backward
         return out
 
     def __add__(self, other): # self + other
