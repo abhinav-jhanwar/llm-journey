@@ -14,7 +14,8 @@ Value class (the scalar equivalent of PyTorch's Tensor), backpropagation using t
 - How a loss function works and how to minimize it to bring the outputs close to the targets.
 - ReLU vs tanh. More in [`notes/`](../notes/02-tanh-vs-relu.md).
 - Non-leaf tensors in PyTorch need a `retain_grad()` call to keep their gradient.
-- Symmetric Derivative: `(f(x + h) - f(x - h)) / (2h)` - more accurate than the one-sided version (error shrinks with h² instead of h), which is why it's used for gradient checking
+- Symmetric Derivative: `(f(x + h) - f(x - h)) / (2h)` - more accurate than the one-sided version (error shrinks with h² instead of h), which is why it's used for gradient checking.
+- tensor.item() should be used over tensor.data.item() as the latter is deprecated and unsafe.
 
 ## How to run
 ### Dependencies

@@ -27,7 +27,7 @@ def get_pytorch_values():
 def verify_micrograd_pytorch():
     for m, t in zip(get_micrograd_values(), get_pytorch_values()):
         # Comparing float64 for Value(python default) and float64 for Tensor(pytorch default)
-        assert math.isclose(m.data, t.data.item(), rel_tol=1e-6)
+        assert math.isclose(m.data, t.item(), rel_tol=1e-6)
         assert math.isclose(m.grad, t.grad.item(), rel_tol=1e-6)
     print("Values match!")
 
