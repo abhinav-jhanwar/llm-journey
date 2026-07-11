@@ -25,6 +25,8 @@ Followed [tutorial from Andrej Karpathy](https://www.youtube.com/watch?v=PaCmpyg
 - `W.grad = None` before backward() is the efficient way to zero gradients.
 - Train/dev/test split (80/10/10, shuffled with a fixed seed): train fits the weights, dev is for comparing models and tuning hyperparameters, test is touched once at the end. Evaluate without the regularization term (and under no_grad) so losses are comparable across models.
 - A model with far fewer parameters than examples (bigram: 729 params vs 180k examples) cannot meaningfully overfit - its train/dev gap is sampling noise, and the sign of a tiny gap carries no meaning. The trigram's small gap (0.019) is real but mild, from sparse context rows.
+- Hyperparameter selection discipline: sweep on dev, touch test once with the winner. Margins smaller than your measured noise floor are ties, not wins - report them as such. Regularization only "fights the data" once it's strong enough; below that it mostly smooths rows with little data, which is why it's nearly free here (the model barely overfits to begin with).
+- Control one variable at a time: my first sweep drew a different random init per strength (`randn(generator=g)` consumes the generator - it advances state rather than resetting), confounding init with strength. Reseeding inside the loop made dev nll cleanly monotonic and dissolved the apparent 0.0003 winner - the 0.003 "margin" was init variance, which turned out to be the sweep's dominant noise source. Seed-once-outside = reproducible variety; seed-per-iteration = controlled comparison. Same API, opposite semantics.
 - Trigram context trick: encode the previous two characters as a single index (27*27 = 729 rows) and keep predicting one of 27 next characters - the same one-layer machinery scales to longer context by growing the input vocabulary. Cost: one-hot over 729 classes is huge and mostly zeros, which is exactly what indexing into W directly (exercise E04) removes.
 
 ## Results
@@ -35,6 +37,8 @@ Followed [tutorial from Andrej Karpathy](https://www.youtube.com/watch?v=PaCmpyg
 | Trigram (1-layer NN) | 2.234 | 2.254 | 2.254 |
 
 The trigram's ~0.2 improvement holds on dev and test, so it's real learning, not memorization.
+
+Regularization sweep (E03, trigram, inits pinned per strength): dev nll is monotonic in strength - 0 through 0.001 are identical to ~0.00003, 0.1+ clearly hurts. The unpinned sweep's apparent winner (0.0003, by 0.003) evaporated once inits were controlled: it was init luck. Test nll 2.2548, consistent with dev.
 
 ## How to run
 ### Dependencies
