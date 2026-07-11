@@ -1,7 +1,7 @@
 # makemore-bigram
 
 ## What I built
-A bigram model that generates new names by sampling from bigram probabilities, evaluated with negative log likelihood. Built twice: first by counting bigrams, then as a one-layer neural net trained by gradient descent - both converge to the same model.
+A bigram model that generates new names by sampling from bigram probabilities, evaluated with negative log likelihood. Built twice: first by counting bigrams, then as a one-layer neural net trained by gradient descent - both converge to the same model. Extended in `exercises.ipynb`: a trigram model (context = previous two characters) and proper train/dev/test evaluation.
 
 Followed [tutorial from Andrej Karpathy](https://www.youtube.com/watch?v=PaCmpygFfXo).
 
@@ -23,6 +23,18 @@ Followed [tutorial from Andrej Karpathy](https://www.youtube.com/watch?v=PaCmpyg
 - Why counting and gradient descent give the same model: the network's logits are log-counts, so W learns the log of the count matrix. With a one-hot input, `xenc @ W` just selects row x of W - the "network" is the count table, learned instead of counted. Same seed, same sampled names from both versions.
 - W² regularization is the gradient-descent twin of count smoothing: smoothing pushes counts toward uniform by adding a constant, regularization pushes W toward zero (uniform logits) by penalizing magnitude. Same knob, two frameworks.
 - `W.grad = None` before backward() is the efficient way to zero gradients.
+- Train/dev/test split (80/10/10, shuffled with a fixed seed): train fits the weights, dev is for comparing models and tuning hyperparameters, test is touched once at the end. Evaluate without the regularization term (and under no_grad) so losses are comparable across models.
+- A model with far fewer parameters than examples (bigram: 729 params vs 180k examples) cannot meaningfully overfit - its train/dev gap is sampling noise, and the sign of a tiny gap carries no meaning. The trigram's small gap (0.019) is real but mild, from sparse context rows.
+- Trigram context trick: encode the previous two characters as a single index (27*27 = 729 rows) and keep predicting one of 27 next characters - the same one-layer machinery scales to longer context by growing the input vocabulary. Cost: one-hot over 729 classes is huge and mostly zeros, which is exactly what indexing into W directly (exercise E04) removes.
+
+## Results
+
+| Model | Train | Dev | Test |
+|---|---|---|---|
+| Bigram (1-layer NN) | 2.460 | 2.459 | 2.464 |
+| Trigram (1-layer NN) | 2.234 | 2.254 | 2.254 |
+
+The trigram's ~0.2 improvement holds on dev and test, so it's real learning, not memorization.
 
 ## How to run
 ### Dependencies
@@ -35,6 +47,9 @@ Followed [tutorial from Andrej Karpathy](https://www.youtube.com/watch?v=PaCmpyg
 ### Commands
 For the notebook:  
 `open bigram.ipynb`
+
+For the trigram + train/dev/test exercises:  
+`open exercises.ipynb`
 
 ## Backlog / known limitations
 None yet.
